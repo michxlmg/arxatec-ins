@@ -112,7 +112,7 @@ function App() {
             <Input
               id="email"
               type="email"
-              placeholder="nombre@arxatec.com"
+              placeholder="Ej.correo@ejemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -135,7 +135,7 @@ function App() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••••••"
+                placeholder="Ej.cfaWR252$Mja"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
