@@ -83,7 +83,141 @@ const Header = ({ title, description }) => (
   </div>
 );
 
+const ChatMessage = ({ role, content, time }) => {
+  const isUser = role === "user";
+  const name = isUser ? "Dr. Robert" : "Asistente";
+
+  return (
+    <div className="flex flex-col gap-1.5 mb-6 max-w-[95%] items-start">
+      {/* Header: Name and Time */}
+      <div className="flex items-baseline gap-2 px-1 text-[11px] font-medium tracking-tight">
+        <span
+          className={cn(
+            "text-foreground/90",
+            isUser ? "text-primary/90" : "text-foreground/90",
+          )}
+        >
+          {name}
+        </span>
+        <span className="text-muted-foreground/60 font-normal italic">
+          {time}
+        </span>
+      </div>
+
+      {/* Message Bubble - All on the left */}
+      <div
+        className={cn(
+          "p-3.5 rounded-2xl rounded-tl-none text-[13.5px] leading-relaxed border transition-all",
+          isUser
+            ? "bg-primary/10 border-primary/20 text-foreground"
+            : "bg-secondary/40 border-border/40 text-foreground/90 backdrop-blur-sm",
+        )}
+      >
+        {content}
+      </div>
+    </div>
+  );
+};
+
+const Chatbot = ({ onBack }) => {
+  const getCurrentTime = () => {
+    const now = new Date();
+    return (
+      now.getHours().toString().padStart(2, "0") +
+      ":" +
+      now.getMinutes().toString().padStart(2, "0")
+    );
+  };
+
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "Hola, soy tu asistente legal de Arxatec. ¿En qué puedo ayudarte con tu documento de Word hoy?",
+      time: "09:00",
+    },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const time = getCurrentTime();
+    const newMessages = [
+      ...messages,
+      { role: "user", content: inputValue, time },
+    ];
+    setMessages(newMessages);
+    setInputValue("");
+
+    // Simulación de respuesta
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "Entiendo perfectamente su consulta, Dr. Robert. Estoy analizando los precedentes legales y la normativa vigente para asistirle con la redacción.",
+          time: getCurrentTime(),
+        },
+      ]);
+    }, 1200);
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-background">
+      {/* Chat Header */}
+      <div className="p-4 border-b border-border flex items-center gap-3 bg-card/30 backdrop-blur-sm">
+        <Button variant="ghost" size="icon" onClick={onBack} className="size-8">
+          <span className="text-xl">←</span>
+        </Button>
+        <div className="flex items-center gap-2">
+          <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+            <img
+              src="/assets/logo.png"
+              className="h-4 filter brightness-110"
+              alt="Logo"
+            />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold leading-none">
+              Asistente Arxatec
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 scrollbar-hide">
+        {messages.map((msg, i) => (
+          <ChatMessage key={i} {...msg} />
+        ))}
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 border-t border-border bg-background">
+        <form onSubmit={handleSend} className="flex gap-2">
+          <Input
+            placeholder="Escribe tu mensaje aquí..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="bg-card/50"
+          />
+          <Button type="submit" size="icon" className="shrink-0 bg-primary">
+            <span className="text-lg">→</span>
+          </Button>
+        </form>
+        <p className="text-[9px] text-center text-muted-foreground mt-3 uppercase tracking-widest">
+          Potenciado por IA Legal Arxatec
+        </p>
+      </div>
+    </div>
+  );
+};
+
 function App() {
+  const [view, setView] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [email, setEmail] = useState("");
@@ -94,9 +228,13 @@ function App() {
     setIsPending(true);
     setTimeout(() => {
       setIsPending(false);
-      alert("Ingreso exitoso (Simulación)");
-    }, 2000);
+      setView("chatbot");
+    }, 1500);
   };
+
+  if (view === "chatbot") {
+    return <Chatbot onBack={() => setView("login")} />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6 antialiased selection:bg-primary/30">
@@ -208,14 +346,12 @@ function App() {
 
         <div className="text-center text-sm">
           <span className="text-muted-foreground">¿No tienes una cuenta?</span>{" "}
-          <a
-            href="https://abogado.arxatec.net/registrarse"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            onClick={() => setView("chatbot")}
             className="font-semibold text-foreground hover:text-primary transition-colors underline underline-offset-4"
           >
-            Regístrate aquí
-          </a>
+            Registrarse
+          </button>
         </div>
       </div>
     </div>
