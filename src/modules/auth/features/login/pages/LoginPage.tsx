@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button, Input, Label, CustomHeader } from "@/components/ui";
 import { login } from "@/modules/auth/services";
+import { API_URL } from "@/config";
 
 import { useNavigate } from "react-router-dom";
 
@@ -29,10 +30,10 @@ export default function LoginPage() {
       } else {
         throw new Error("No se recibió el token de acceso.");
       }
-    } catch (err: any) {
-
-      console.error(err);
-      setError(err.message || "Error al iniciar sesión");
+    } catch (err) {
+      const error = err as Error;
+      console.error(error);
+      setError(error.message || "Error al iniciar sesión");
     } finally {
       setIsLoading(false);
     }
@@ -126,8 +127,7 @@ export default function LoginPage() {
               variant="outline"
               type="button"
               onClick={() =>
-                (window.location.href =
-                  "https://abogado.arxatec.net/api/auth/login/google")
+                (window.location.href = `${API_URL}/auth/login/google`)
               }
               className="w-full h-11 border-border/50 bg-card/50"
             >

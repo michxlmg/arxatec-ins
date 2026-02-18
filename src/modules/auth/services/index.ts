@@ -4,7 +4,7 @@ import type { ApiResponse } from "@/types";
 export interface LoginResponseData {
   token?: string;
   accessToken?: string;
-  user?: any;
+  user?: Record<string, unknown>;
 }
 
 export const login = async (email: string, password: string) => {

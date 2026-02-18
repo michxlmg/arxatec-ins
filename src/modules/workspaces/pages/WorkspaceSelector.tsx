@@ -1,16 +1,8 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Briefcase, LogOut, Plus, Sparkles } from "lucide-react";
 import { Button, Input, Skeleton } from "@/components/ui";
-import { getWorkspaces, createWorkspace } from "@/modules/workspaces/services";
-
-interface Workspace {
-  id: string;
-  public_id?: string;
-  name: string;
-}
-
 import { useNavigate } from "react-router-dom";
+import { getWorkspaces, createWorkspace, type Workspace } from "@/modules/workspaces/services";
 
 export default function WorkspaceSelector() {
   const navigate = useNavigate();
@@ -20,10 +12,10 @@ export default function WorkspaceSelector() {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState("");
 
-  const onLogout = () => {
+  const onLogout = useCallback(() => {
     localStorage.removeItem("TOKEN_AUTH");
     navigate("/login");
-  };
+  }, [navigate]);
 
   const onWorkspaceSelected = (ws: Workspace) => {
     localStorage.setItem("CURRENT_WORKSPACE", JSON.stringify(ws));
@@ -31,25 +23,26 @@ export default function WorkspaceSelector() {
   };
 
 
-  const fetchList = async () => {
+  const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await getWorkspaces();
-      setWorkspaces(response.data?.workspaces || []);
-    } catch (err: any) {
+      setWorkspaces(response.data || []);
+    } catch (err) {
       console.error(err);
-      if (err.message && err.message.includes("401")) {
+      const errorResponse = err as { message?: string };
+      if (errorResponse.message && errorResponse.message.includes("401")) {
          onLogout();
       }
       setError("Error al cargar espacios de trabajo.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onLogout]);
 
   useEffect(() => {
     fetchList();
-  }, []);
+  }, [fetchList]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +51,24 @@ export default function WorkspaceSelector() {
     setIsCreating(true);
     setError("");
     try {
-      await createWorkspace(newWorkspaceName);
+      const response = await createWorkspace(newWorkspaceName);
+      const newWorkspaceId = response.data;
+      
       setNewWorkspaceName("");
-      await fetchList();
-    } catch (err: any) {
-      setError(err.message || "Error al crear espacio.");
+      // Fetch latest list
+      const updatedResponse = await getWorkspaces();
+      const updatedList = updatedResponse.data || [];
+      setWorkspaces(updatedList);
+      
+      // Auto-select the newly created workspace
+      const newWs = updatedList.find(ws => ws.id === newWorkspaceId);
+      if (newWs) {
+        onWorkspaceSelected(newWs);
+      }
+    } catch (err) {
+      const error = err as Error;
+      console.error(error);
+      setError(error.message || "Error al iniciar sesión");
     } finally {
       setIsCreating(false);
     }
@@ -93,7 +99,7 @@ export default function WorkspaceSelector() {
               <div className="space-y-4">
                 {workspaces.map((ws) => (
                   <button
-                    key={ws.id || ws.public_id}
+                    key={ws.id}
                     onClick={() => onWorkspaceSelected(ws)}
                     className="w-full p-6 rounded-2xl border border-border/40 bg-card/40 hover:bg-card/60 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all text-left group relative overflow-hidden active:scale-[0.98]"
                   >

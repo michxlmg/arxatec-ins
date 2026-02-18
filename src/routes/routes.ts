@@ -3,6 +3,7 @@ export const ROUTES = {
         Login: "/login",
         Register: "/register",
         RecoverPassword: "/recover-password",
+        OAuthCallback: "/oauth/callback",
     },
     App: {
         Workspaces: "/workspaces",

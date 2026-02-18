@@ -31,7 +31,7 @@ export const HistorySidebar: React.FC<HistorySidebarProps> = ({ workspaceId, onC
         refetchOnMount: true, // Refetch when component mounts
     });
 
-    const conversations = data?.conversations || [];
+    const conversations = data || [];
 
     const navigateToConversation = (conversationId: string) => {
         navigate(`/chat/${conversationId}`);
@@ -61,7 +61,7 @@ export const HistorySidebar: React.FC<HistorySidebarProps> = ({ workspaceId, onC
                             <Ellipsis className="h-4 w-4 shrink-0" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuContent align="start" className="w-56 bg-popover border border-border mt-1">
                         <DropdownMenuItem onClick={() => navigate("/workspaces")}>
                             <Briefcase className="h-4 w-4 mr-2" />
                             Cambiar espacio

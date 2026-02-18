@@ -56,7 +56,9 @@ export const sendMessageStream = async (
                     errorMessage = text;
                 }
             }
-        } catch (e) { }
+        } catch (e) {
+            console.error("Error parsing error response:", e);
+        }
         throw new Error(errorMessage);
     }
 
@@ -79,8 +81,8 @@ export const getAssistantMessages = async (
 
 export const getAssistantConversations = async (
     workspaceId: string
-): Promise<{ conversations: ConversationResponseData[]; pagination: any }> => {
-    const { data } = await axiosInstance.get<ApiResponse<{ conversations: ConversationResponseData[]; pagination: any }>>(
+): Promise<ConversationResponseData[]> => {
+    const { data } = await axiosInstance.get<ApiResponse<ConversationResponseData[]>>(
         `/${workspaceId}/assistant/conversations`,
         {
             params: { limit: 100 },

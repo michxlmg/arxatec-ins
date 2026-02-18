@@ -1,24 +1,20 @@
-
 import { axiosInstance } from "../../../interceptors";
+import type { ApiResponse } from "@/types";
 
-interface Workspace {
+export interface Workspace {
   id: string;
-  public_id?: string;
   name: string;
+  avatar?: string;
+  role: string;
+  members: number;
 }
 
-interface WorkspaceResponse {
-  data: {
-    workspaces: Workspace[];
-  };
-}
-
-export const getWorkspaces = async (): Promise<WorkspaceResponse> => {
-  const { data } = await axiosInstance.get<WorkspaceResponse>("/workspaces");
+export const getWorkspaces = async (): Promise<ApiResponse<Workspace[]>> => {
+  const { data } = await axiosInstance.get<ApiResponse<Workspace[]>>("/workspaces");
   return data;
 };
 
-export const createWorkspace = async (name: string) => {
-  const { data } = await axiosInstance.post("/workspaces", { name });
+export const createWorkspace = async (name: string): Promise<ApiResponse<string>> => {
+  const { data } = await axiosInstance.post<ApiResponse<string>>("/workspaces", { name });
   return data;
 };

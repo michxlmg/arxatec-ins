@@ -1,4 +1,5 @@
 import * as guard from "@/components/guards";
+import * as layout from "@/components/layout";
 import * as pages from "@/modules";
 import { ROUTES } from "@/routes/routes";
 import { Navigate } from "react-router-dom";
@@ -12,12 +13,17 @@ export const appRoutes = {
       element: <pages.WorkspaceSelector />,
     },
     {
-      path: ROUTES.App.Chat,
-      element: <pages.ChatPage />,
+      element: <layout.Assistant />,
+      children: [
+        {
+          path: ROUTES.App.Chat,
+          element: <pages.ChatPage />,
+        },
+        {
+          path: "/chat",
+          element: <Navigate to={ROUTES.App.Workspaces} replace />,
+        },
+      ],
     },
-    {
-        path: "/chat",
-        element: <Navigate to={ROUTES.App.Workspaces} replace />,
-    }
   ],
 };

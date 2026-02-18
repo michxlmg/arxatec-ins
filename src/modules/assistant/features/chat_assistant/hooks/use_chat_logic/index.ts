@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { AssistantMessage } from "../../types";
 import { getAssistantMessages, getConversationById } from "../../services";
@@ -11,17 +11,15 @@ export const useChatLogic = () => {
     const workspaceId = workspace?.id || workspace?.public_id;
 
     const [conversationId, setConversationId] = useState<string | null>(null);
+    const [prevAssistantId, setPrevAssistantId] = useState(assistantId);
     const [conversationsState, setConversationsState] = useState<
         Record<string, { optimisticMessages: AssistantMessage[]; isGenerating?: boolean }>
     >({});
 
-    useEffect(() => {
-        if (!assistantId || assistantId.toLowerCase() === "nuevo") {
-            setConversationId(null);
-        } else {
-            setConversationId(assistantId);
-        }
-    }, [assistantId]);
+    if (assistantId !== prevAssistantId) {
+        setPrevAssistantId(assistantId);
+        setConversationId(!assistantId || assistantId.toLowerCase() === "nuevo" ? null : assistantId);
+    }
 
     // Messages Query - only enabled for existing conversations
     const {

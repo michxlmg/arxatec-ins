@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Button,
   Dialog,
@@ -8,7 +9,6 @@ import {
   Input,
 } from "@/components/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { updateConversation } from "../../services";
 import { toast } from "sonner";
 
@@ -36,6 +36,14 @@ export const ChangeTitleDialog: React.FC<Props> = ({
     },
   });
   const [title, setTitle] = useState(initialTitle);
+  const [prevInitialTitle, setPrevInitialTitle] = useState(initialTitle);
+  const [prevOpen, setPrevOpen] = useState(open);
+
+  if (initialTitle !== prevInitialTitle || open !== prevOpen) {
+    setPrevInitialTitle(initialTitle);
+    setPrevOpen(open);
+    setTitle(initialTitle);
+  }
 
   const onSubmit = async () => {
     if (!title || title.trim() === "") return;
@@ -46,10 +54,6 @@ export const ChangeTitleDialog: React.FC<Props> = ({
     });
     setOpen(false);
   };
-
-  useEffect(() => {
-    setTitle(initialTitle);
-  }, [open, initialTitle]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

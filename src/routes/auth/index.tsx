@@ -19,6 +19,10 @@ export const authRoutes = {
           path: ROUTES.Auth.Login,
           element: <pages.LoginPage />,
         },
+        {
+          path: ROUTES.Auth.OAuthCallback,
+          element: <pages.OAuthCallbackPage />,
+        },
       ],
     },
   ],
