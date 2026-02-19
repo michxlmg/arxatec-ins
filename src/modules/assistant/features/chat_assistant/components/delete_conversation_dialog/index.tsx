@@ -55,7 +55,7 @@ export const DeleteConversationDialog: React.FC<Props> = ({
             puede ser deshecha.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="mt-2">
+        <DialogFooter className="mt-4">
           <Button size="sm" variant="outline" onClick={() => setOpen(false)}>
             Cancelar
           </Button>

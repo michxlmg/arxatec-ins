@@ -3,6 +3,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -60,21 +61,25 @@ export const ChangeTitleDialog: React.FC<Props> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Cambiar título</DialogTitle>
+          <DialogDescription className="sr-only">
+            Ingresa el nuevo título para esta conversación.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
           <Input
             placeholder="Ej. Consulta de Juan Pérez"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-4"
           />
-          <DialogFooter className="mt-2">
-            <Button size="sm" variant="outline" onClick={() => setOpen(false)}>
-              Cancelar
-            </Button>
-            <Button size="sm" onClick={onSubmit}>
-              Cambiar título
-            </Button>
-          </DialogFooter>
-        </DialogHeader>
+        </div>
+        <DialogFooter>
+          <Button size="sm" variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={onSubmit}>
+            Cambiar título
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
